@@ -1,10 +1,12 @@
 {
   "name": "donation-js-contract",
+
   "version": "1.0.0",
   "description": "Hello NEAR contract in Javascript",
   "type": "module",
   "scripts": {
     "build": "near-sdk-js build src/index.ts build/donation.wasm"
+
   },
   "author": "Near Inc <hello@nearprotocol.com>",
   "license": "Apache-2.0",
