@@ -1,7 +1,24 @@
-import { formatNearAmount } from 'near-api-js/lib/utils/format'
 import 'regenerator-runtime/runtime'
-import { initContract, login, logout, donate,
-         getBeneficiary, latestDonations, getTransactionResult } from './near/utils'
+import { Contract } from './near-interface';
+import { Wallet } from './near-wallet'
+
+// create the Wallet and the Contract
+window.wallet = new Wallet({contractId: process.env.CONTRACT_NAME});
+window.contract = new Contract({wallet: window.wallet})
+
+//  Setup on page load
+window.onload = async () => {
+  const isSignedIn = await wallet.startUp();
+
+  if (isSignedIn){
+    signedInFlow()
+  }else{
+    signedOutFlow()
+  }
+
+  fetchBeneficiary()
+  getAndShowDonations()
+}
 
 // On submit, get the greeting and send it to the contract
 document.querySelector('form').onsubmit = async (event) => {
@@ -14,7 +31,7 @@ document.querySelector('form').onsubmit = async (event) => {
   fieldset.disabled = true
 
   try {
-    await donate(donation.value)
+    await contract.donate(donation.value)
   } catch (e) {
     alert(
       'Something went wrong! ' +
@@ -28,33 +45,18 @@ document.querySelector('form').onsubmit = async (event) => {
   fieldset.disabled = false
 }
 
-document.querySelector('#sign-in-button').onclick = login
-document.querySelector('#sign-out-button').onclick = logout
+document.querySelector('#sign-in-button').onclick = () => { wallet.signIn() }
+document.querySelector('#sign-out-button').onclick = () => { wallet.signOut() }
 
 async function fetchBeneficiary() {
   // Get greeting from the contract
-  const currentGreeting = await getBeneficiary()
+  const currentGreeting = await contract.getBeneficiary()
 
   // Set all elements marked as greeting with the current greeting
   document.querySelectorAll('[data-behavior=beneficiary]').forEach(el => {
     el.innerText = currentGreeting
     el.value = currentGreeting
   })
-}
-
-// `nearInitPromise` gets called on page load
-window.nearInitPromise = initContract()
-                        .then(flow)
-                        .catch(console.error)
-
-function flow(){
-  if (window.walletConnection.isSignedIn()){
-    signedInFlow()
-  }else{
-    signedOutFlow()
-  }
-  fetchBeneficiary()
-  getAndShowDonations()
 }
 
 // Display the signed-out-flow container
@@ -72,7 +74,7 @@ async function signedInFlow() {
 
   if(txhash !== null){
     // Get result from the transaction
-    let result = await getTransactionResult(txhash)
+    let result = await contract.getDonationFromTransaction(txhash)
     document.querySelector('[data-behavior=donation-so-far]').innerText = result
 
     // show notification
@@ -90,7 +92,7 @@ async function getAndShowDonations(){
   document.getElementById('donations-table').innerHTML = 'Loading ...'
 
   // Load last 10 donations
-  let donations = await latestDonations()
+  let donations = await contract.latestDonations()
 
   document.getElementById('donations-table').innerHTML = ''
 
@@ -99,7 +101,7 @@ async function getAndShowDonations(){
     tr.innerHTML = `
       <tr>
         <th scope="row">${elem.account_id}</th>
-        <td>${formatNearAmount(elem.total_amount)}</td>
+        <td>${elem.total_amount}</td>
       </tr>
     `
     document.getElementById('donations-table').appendChild(tr)

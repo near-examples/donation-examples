@@ -25,11 +25,15 @@ test.beforeEach(async (t) => {
     initialBalance: NEAR.parse("30 N").toJSON(),
   });
 
-  // Deploy the contract.
-  const contract = await root.devDeploy("./out/main.wasm", {
-    method: "init",
-    args: { beneficiary: beneficiary.accountId }
+  const contract = await root.createSubAccount("contract", {
+    initialBalance: NEAR.parse("30 N").toJSON(),
   });
+  
+  // Deploy the contract.
+  await contract.deploy(process.argv[2]);
+
+  // Initialize beneficiary
+  await contract.call(contract, "init", {beneficiary: beneficiary.accountId})
 
   // Save state for test runs, it is unique for each test
   t.context.worker = worker;
