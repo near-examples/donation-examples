@@ -3,10 +3,10 @@ import { Contract } from './near-interface';
 import { Wallet } from './near-wallet'
 
 // create the Wallet and the Contract
-window.wallet = new Wallet({contractId: process.env.CONTRACT_NAME});
-window.contract = new Contract({wallet: window.wallet})
+const wallet = new Wallet({contractId: process.env.CONTRACT_NAME, createAccessKey: true});
+const contract = new Contract({wallet: wallet})
 
-//  Setup on page load
+// Setup on page load
 window.onload = async () => {
   const isSignedIn = await wallet.startUp();
 
