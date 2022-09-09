@@ -1,5 +1,5 @@
 import { NearBindgen, near, call, view, initialize, UnorderedMap } from 'near-sdk-js'
-import { assert, make_private } from './utils'
+import { assert } from './utils'
 import { Donation, STORAGE_COST } from './model'
 
 @NearBindgen({})
@@ -7,12 +7,12 @@ class DonationContract {
   beneficiary: string = "v1.faucet.nonofficial.testnet";
   donations: UnorderedMap = new UnorderedMap('map-uid-1');
 
-  @initialize
+  @initialize({})
   init({ beneficiary }:{beneficiary: string}) {
     this.beneficiary = beneficiary
   }
 
-  @call
+  @call({payableFunction: true})
   donate() {
     // Get who is calling the method and how much $NEAR they attached
     let donor = near.predecessorAccountId(); 
@@ -42,19 +42,18 @@ class DonationContract {
     return donatedSoFar.toString()
   }
 
-  @call
+  @call({privateFunction: true})
   change_beneficiary(beneficiary) {
-    make_private();
     this.beneficiary = beneficiary;
   }
 
-  @view
+  @view({})
   get_beneficiary(){ return this.beneficiary }
 
-  @view
+  @view({})
   number_of_donors() { return this.donations.length }
 
-  @view
+  @view({})
   get_donations({from_index = 0, limit = 50}: {from_index:number, limit:number}): Donation[] {
     let ret:Donation[] = []
     let end = Math.min(limit, this.donations.length)
@@ -66,7 +65,7 @@ class DonationContract {
     return ret
   }
 
-  @view
+  @view({})
   get_donation_for_account({account_id}:{account_id:string}): Donation{
     return new Donation({
       account_id,
