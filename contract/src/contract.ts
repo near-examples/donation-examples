@@ -7,7 +7,7 @@ class DonationContract {
   beneficiary: string = "v1.faucet.nonofficial.testnet";
   donations: UnorderedMap = new UnorderedMap('map-uid-1');
 
-  @initialize({})
+  @initialize({privateFunction: true})
   init({ beneficiary }:{beneficiary: string}) {
     this.beneficiary = beneficiary
   }
