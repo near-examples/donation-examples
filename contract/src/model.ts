@@ -4,7 +4,7 @@ export class Donation {
   account_id: string;
   total_amount: string;
 
-  constructor({account_id, total_amount}:{account_id: string, total_amount: string}) {
+  constructor({account_id, total_amount}: Donation) {
     this.account_id = account_id;
     this.total_amount = total_amount;
   }
