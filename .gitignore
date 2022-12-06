@@ -15,9 +15,12 @@ node_modules
 
 # testing
 /coverage
+**/videos
+**/screenshots
 
 # production
 **/build
+**/.parcel-cache
 
 # misc
 .DS_Store
