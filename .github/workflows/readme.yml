@@ -1,7 +1,7 @@
-name: Package Scripts
+name: README
 on: push
 jobs:
-  scripts-ubuntu:
+  readme-ubuntu:
     strategy:
       matrix:
         platform: [ubuntu-latest, ubuntu-22.04]
@@ -17,7 +17,7 @@ jobs:
         run: printf 'y\n' | yarn deploy
       - name: Start
         run: bash .github/scripts/runfe.sh
-  scripts-mac:
+  readme-mac:
     strategy:
       matrix:
         platform: [macos-latest]
