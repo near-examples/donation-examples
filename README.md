@@ -3,8 +3,7 @@
 [![](https://img.shields.io/badge/Gitpod-Ready-orange)](https://gitpod.io/#/https://github.com/near-examples/donation-js)
 [![](https://img.shields.io/badge/Contract-js-yellow)](https://docs.near.org/develop/contracts/anatomy)
 [![](https://img.shields.io/badge/Frontend-JS-yellow)](https://docs.near.org/develop/integrate/frontend)
-[![](https://img.shields.io/github/workflow/status/near-examples/donation-js/Tests/master?color=green&label=Tests)](https://github.com/near-examples/donation-js/actions/workflows/tests.yml)
-[![](https://img.shields.io/github/workflow/status/near-examples/donation-js/README/master?color=green&label=README)](https://github.com/near-examples/donation-js/actions/workflows/readme.yml)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnear-examples%2Fdonation-js%2Fbadge&style=flat&label=Tests)](https://actions-badge.atrox.dev/near-examples/donation-js/goto)
 
 
 Our Donation example enables to forward money to an account while keeping track of it. It is one of the simplest examples on making a contract receive and send money.
