@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+  <link rel="icon" href="./assets/favicon.ico" />
+  <link rel="apple-touch-icon" href="./assets/favicon.ico" />
+  <link rel="stylesheet" href="./assets/global.css">
+  <title>Welcome to NEAR</title>
+</head>
+
+<body class="p-4 p-sm-5">
+
+  <div class="row">
+    <div class="col-sm-8 pe-2 pe-sm-5">
+      <h4> Latest Donations </h4>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">User</th>
+            <th scope="col">Total Donated Ⓝ</th>
+          </tr>
+        </thead>
+        <tbody id="donations-table"> </tbody>
+      </table>
+
+    </div>
+
+    <div class="col-sm-4">
+      <div class="donation-box mt-md-4">
+
+        <div class="donation-box-head">
+          <i class="logo"></i>
+          <h4> Donate to <label
+            for="beneficiary"
+            data-behavior="beneficiary"
+            style="color: var(--secondary); border-bottom: 2px solid var(--secondary);"
+          >
+          </label> </h4>
+        </div>
+
+        <main class="donation-body signed-out-flow" style="display: none">
+          <p>
+            Please sign in with your NEAR wallet to make a donation.
+          </p>
+          <p style="text-align: center; margin-top: 2.5em">
+            <button id="sign-in-button" class="btn btn-primary">Sign in</button>
+          </p>
+        </main>
+      
+        <main class="signed-in-flow" class="donation-body" style="display: none">
+          <div class="row">
+            <div class="col-3 px-1"><button class="btn btn-outline-primary" onclick="set_donation(10)"> $ 10 </button></div>
+            <div class="col-3 px-1"><button class="btn btn-outline-primary" onclick="set_donation(20)"> $ 20 </button></div>
+            <div class="col-3 px-1"><button class="btn btn-outline-primary" onclick="set_donation(50)"> $ 50 </button></div>
+            <div class="col-3 px-1"><button class="btn btn-outline-primary" onclick="set_donation(100)"> $ 100 </button></div>
+          </div>
+  
+          <form>
+            <fieldset id="fieldset">
+              <label for="donation" class="form-label" >
+                Donation amount (in Ⓝ)
+              </label>
+              <div class="input-group">
+                <input id="donation" class="form-control" data-behavior="donation" />
+                <span class="input-group-text">Ⓝ</span>
+                <button class="btn btn-primary" >Donate</button>
+              </div>
+            </fieldset>
+          </form>
+        </main>
+  
+        <button class="link signed-in-flow" style="display: none; float: right" id="sign-out-button">
+          Sign out
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <aside data-behavior="notification" style="display:none" class="bg-success p-2 text-white bg-opacity-75">
+    Thank you! You have donated so far:
+    <label for="donation-number" data-behavior="donation-so-far" > </label>Ⓝ
+    <footer>
+      <div>✔ Succeeded</div>
+    </footer>
+  </aside>
+
+  <script src="index.js" type="module"></script>
+</body>
+</html>
