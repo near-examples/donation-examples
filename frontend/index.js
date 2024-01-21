@@ -2,9 +2,10 @@ import 'regenerator-runtime/runtime'
 import { Contract } from './near-interface';
 import { Wallet } from './near-wallet'
 
+const CONTRACT_NAME = "donation.near-examples.testnet"
 // When creating the wallet you can choose to create an access key, so the user
 // can skip signing non-payable methods when interacting with the contract
-const wallet = new Wallet({ createAccessKeyFor: process.env.CONTRACT_NAME })
+const wallet = new Wallet({ createAccessKeyFor: CONTRACT_NAME })
 
 // Abstract the logic of interacting with the contract to simplify your project
 const contract = new Contract({ contractId: process.env.CONTRACT_NAME, walletToUse: wallet });
