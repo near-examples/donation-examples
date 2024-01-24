@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, near_bindgen, AccountId};
+use near_sdk::{near_bindgen, AccountId};
 use near_sdk::collections::{UnorderedMap};
 
 mod donation;

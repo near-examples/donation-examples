@@ -1,4 +1,4 @@
-name: Tests
+name: Tests Contract TS
 on: push
 jobs:
   workflows:
@@ -11,7 +11,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
-      - name: Install modules
-        run: yarn
-      - name: Run tests
-        run: yarn test
+      - name: Install and test modules
+        run: |
+          cd ./contract-ts
+          yarn
+          yarn test

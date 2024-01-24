@@ -3,9 +3,9 @@ import { NearBindgen, near, call, view, initialize, UnorderedMap } from 'near-sd
 import { assert } from './utils'
 import { Donation, STORAGE_COST } from './model'
 
-@NearBindgen({})
+@NearBindgen({requireInit: true})
 class DonationContract {
-  beneficiary: string = "v1.faucet.nonofficial.testnet";
+  beneficiary: string = "";
   donations = new UnorderedMap<bigint>('map-uid-1');
 
   @initialize({ privateFunction: true })
@@ -57,12 +57,12 @@ class DonationContract {
   @view({})
   get_donations({ from_index = 0, limit = 50 }: { from_index: number, limit: number }): Donation[] {
     let ret: Donation[] = []
-    let end = Math.min(limit, this.donations.length)
-    for (let i = from_index; i < end; i++) {
-      const account_id: string = this.donations.keys.get(i) as string
+
+    for (const account_id of this.donations.keys({start:from_index,limit})) {
       const donation: Donation = this.get_donation_for_account({ account_id })
       ret.push(donation)
     }
+    
     return ret
   }
 
