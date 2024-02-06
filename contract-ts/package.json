@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "build": "near-sdk-js build src/contract.ts build/contract.wasm",
-    "deploy": "near dev-deploy --wasmFile build/contract.wasm",
     "test": "$npm_execpath run build && cd sandbox-ts && $npm_execpath run test -- -- ../build/contract.wasm",
     "postinstall": "cd sandbox-ts && $npm_execpath install"
   },

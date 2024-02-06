@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "license": "(MIT AND Apache-2.0)",
   "scripts": {
-    "start": "parcel index.html --open",
-    "start:headless": "env-cmd -f '../contract/neardev/dev-account.env' parcel index.html",
+    "start": "parcel index.html",
     "build": "parcel build index.html --public-url ./",
     "test:e2e": "npm run start:headless & npm run cypress:run",
     "cypress:run": "cd .cypress && cypress run",
