@@ -1,102 +1,162 @@
 # Donation Contract
 
-The smart contract exposes multiple methods to handle donating money to a `beneficiary` set on initialization.
+The smart contract exposes multiple methods to handle donating money to a
+beneficiary set on initialization.
 
-```rust
-#[payable] // Public - People can attach money
-pub fn donate(&mut self) -> U128 {
-  // Get who is calling the method
-  // and how much $NEAR they attached
-  let donor: AccountId = env::predecessor_account_id();
-  let donation_amount: Balance = env::attached_deposit();
+## How to Build Locally?
 
-  let mut donated_so_far = self.donations.get(&donor).unwrap_or(0);
-
-  let to_transfer: Balance = if donated_so_far == 0 {
-    // Registering the user's first donation increases storage
-    assert!(donation_amount > STORAGE_COST, "Attach at least {} yoctoNEAR", STORAGE_COST);
-
-    // Subtract the storage cost to the amount to transfer
-    donation_amount - STORAGE_COST
-  }else{
-    donation_amount
-  };
-
-  // Persist in storage the amount donated so far
-  donated_so_far += donation_amount;
-  self.donations.insert(&donor, &donated_so_far);
-  
-  log!("Thank you {} for donating {}! You donated a total of {}", donor.clone(), donation_amount, donated_so_far);
-  
-  // Send the money to the beneficiary
-  Promise::new(self.beneficiary.clone()).transfer(to_transfer);
-
-  // Return the total amount donated so far
-  U128(donated_so_far)
-}
-```
-
-<br />
-
-# Quickstart
-
-1. Make sure you have installed [rust](https://rust.org/).
-2. Install the [`NEAR CLI`](https://github.com/near/near-cli#setup)
-
-<br />
-
-## 1. Build and Deploy the Contract
-You can automatically compile and deploy the contract in the NEAR testnet by running:
+Install [`cargo-near`](https://github.com/near/cargo-near) and run:
 
 ```bash
-./deploy.sh
+cargo near build
 ```
 
-Once finished, check the `neardev/dev-account` file to find the address in which the contract was deployed:
+## How to Test Locally?
 
 ```bash
-cat ./neardev/dev-account
-# e.g. dev-1659899566943-21539992274727
+cargo test
 ```
 
-The contract will be automatically initialized with a default `beneficiary`.
+## How to Deploy?
 
-To initialize the contract yourself do:
+Deployment is automated with GitHub Actions CI/CD pipeline. To deploy manually,
+install [`cargo-near`](https://github.com/near/cargo-near) and run:
 
 ```bash
-# Use near-cli to initialize contract (optional)
-near call <dev-account> new '{"beneficiary":"<account>"}' --accountId <dev-account>
+cargo near deploy <account-id>
 ```
 
-<br />
+## How to Interact?
 
-## 2. Get Beneficiary
-`beneficiary` is a read-only method (`view` method) that returns the beneficiary of the donations.
+** In this example we will be using [NEAR CLI](https://github.com/near/near-cli)
+to intract with the NEAR blockchain and the smart contract as it provides some
+abstractions for quick interactions. **
 
-`View` methods can be called for **free** by anyone, even people **without a NEAR account**!
+If you want full control over of your interactions we recommend using the
+[near CLI-RS](https://near.cli.rs). **
+
+### Initialize
+
+The contract will be automatically initialized with a default beneficiary. To
+initialize the contract yourself do:
 
 ```bash
-near view <dev-account> beneficiary
+near call <deployed-to-account> new '{"beneficiary":"<account>"}' --accountId <deployed-to-account>
 ```
 
-<br />
+### Get Beneficiary
 
-## 3. Get Number of Donations
+`get_beneficiary` is a read-only method (view method) that returns the
+beneficiary of the donations.
 
-`donate` forwards any attached money to the `beneficiary` while keeping track of it.
+View methods can be called for free by anyone, even people without a NEAR
+account!
 
-`donate` is a payable method for which can only be invoked using a NEAR account. The account needs to attach money and pay GAS for the transaction.
+```bash
+near view <deployed-to-account> get_beneficiary
+```
+
+### Change Beneficiary
+
+`change_beneficiary` is a read-only method (view method) that returns the
+beneficiary of the donations.
+
+View methods can be called for free by anyone, even people without a NEAR
+account!
+
+```bash
+near call <deployed-to-account> change_beneficiary {"new_beneficiary": "<new-baccount>"} --accountId <deployed-to-account>
+```
+
+### Donate
+
+`donate` forwards any attached NEAR tokens to the `beneficiary` while keeping
+track of it.
+
+`donate` is a payable method for which can only be invoked using a NEAR account.
+The account needs to attach NEAR Tokens and pay GAS for the transaction.
 
 ```bash
 # Use near-cli to donate 1 NEAR
-near call <dev-account> donate --amount 1 --accountId <account>
+near call <deployed-to-account> donate --amount 1 --accountId <account>
 ```
 
-**Tip:** If you would like to `donate` using your own account, first login into NEAR using:
+```rust
+#[payable]
+    pub fn donate(&mut self) -> String {
+        // Get who is calling the method and how much NEAR they attached
+        let donor: AccountId = env::predecessor_account_id();
+        let donation_amount = env::attached_deposit();
+
+        require!(
+            donation_amount > STORAGE_COST,
+            format!(
+                "Attach at least {} yoctoNEAR to cover for the storage cost",
+                STORAGE_COST
+            )
+        );
+
+        let mut donated_so_far: NearToken = self
+            .donations
+            .get(&donor)
+            .unwrap_or(NearToken::from_near(0));
+
+        let to_transfer = if donated_so_far.is_zero() {
+            // This is the user's first donation, lets register it, which increases storage
+            // Subtract the storage cost to the amount to transfer
+            donation_amount.saturating_sub(STORAGE_COST).to_owned()
+        } else {
+            donation_amount
+        };
+
+        // Persist in storage the amount donated so far
+        donated_so_far = donated_so_far.saturating_add(donation_amount);
+
+        self.donations.insert(&donor, &donated_so_far);
+
+        log!(
+            "Thank you {} for donating {}! You donated a total of {}",
+            donor.clone(),
+            donation_amount,
+            donated_so_far
+        );
+
+        // Send the NEAR to the beneficiary
+        Promise::new(self.beneficiary.clone()).transfer(to_transfer);
+
+        // Return the total amount donated so far
+        donated_so_far.to_string()
+    }
+```
+
+### Get Number of Donors
 
 ```bash
-# Use near-cli to login your NEAR account
-near login
+near view <deployed-to-account> get_number_of_donors
 ```
 
-and then use the logged account to sign the transaction: `--accountId <your-account>`.
+### Get donations for account
+
+```bash
+near view <deployed-to-account> get_donations_for_account '{"account_id":"<account>"}'
+```
+
+### Get Total Donations
+
+```bash
+near view <deployed-to-account> get_donations
+```
+
+## Useful Links
+
+- [cargo-near](https://github.com/near/cargo-near) - NEAR smart contract
+  development toolkit for Rust
+- [near CLI-RS](https://near.cli.rs) - Iteract with NEAR blockchain from command
+  line
+- [NEAR Rust SDK Documentation](https://docs.near.org/sdk/rust/introduction)
+- [NEAR Documentation](https://docs.near.org)
+- [NEAR StackOverflow](https://stackoverflow.com/questions/tagged/nearprotocol)
+- [NEAR Discord](https://near.chat)
+- [NEAR Telegram Developers Community Group](https://t.me/neardev)
+- NEAR DevHub: [Telegram](https://t.me/neardevhub),
+  [Twitter](https://twitter.com/neardevhub)
