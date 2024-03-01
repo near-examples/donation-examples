@@ -28,12 +28,11 @@ cargo near deploy <account-id>
 
 ## How to Interact?
 
-** In this example we will be using [NEAR CLI](https://github.com/near/near-cli)
-to intract with the NEAR blockchain and the smart contract as it provides some
-abstractions for quick interactions. **
+_In this example we will be using [NEAR CLI](https://github.com/near/near-cli)
+to intract with the NEAR blockchain and the smart contract_
 
-If you want full control over of your interactions we recommend using the
-[near CLI-RS](https://near.cli.rs). **
+_If you want full control over of your interactions we recommend using the
+[near-cli-rs](https://near.cli.rs)._
 
 ### Initialize
 
@@ -77,7 +76,6 @@ track of it.
 The account needs to attach NEAR Tokens and pay GAS for the transaction.
 
 ```bash
-# Use near-cli to donate 1 NEAR
 near call <deployed-to-account> donate --amount 1 --accountId <account>
 ```
 
@@ -135,7 +133,7 @@ near call <deployed-to-account> donate --amount 1 --accountId <account>
 near view <deployed-to-account> get_number_of_donors
 ```
 
-### Get donations for account
+### Get Donations for Account
 
 ```bash
 near view <deployed-to-account> get_donations_for_account '{"account_id":"<account>"}'
