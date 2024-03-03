@@ -1,15 +1,15 @@
 // Find all our documentation at https://docs.near.org
 use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
-use near_sdk::{near_bindgen, AccountId, NearSchema, NearToken};
+use near_sdk::{near_bindgen, AccountId, NearToken};
 
 mod donation;
 
 // Define the contract structure
 #[near_bindgen]
-#[derive(NearSchema, BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize)]
 #[borsh(crate = "near_sdk::borsh")]
-#[abi(json, borsh)]
+
 pub struct Contract {
     pub beneficiary: AccountId,
     pub donations: UnorderedMap<AccountId, NearToken>,
