@@ -57,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?
         .json()?;
 
-    #[derive(near_sdk::serde::Serialize, near_sdk::serde::Deserialize)]
+    #[derive(near_sdk::serde::Serialize, near_sdk::serde::Deserialize, Debug, PartialEq)]
     #[serde(crate = "near_sdk::serde")]
     struct Donation {
         account_id: AccountId,
@@ -79,7 +79,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?
         .json()?;
 
-    assert_eq!(donation_vec.len(), 2);
+    assert_eq!(
+        donation_vec,
+        vec![
+            Donation {
+                account_id: alice_account.id().clone(),
+                total_amount: NearToken::from_near(4),
+            },
+            Donation {
+                account_id: bob_account.id().clone(),
+                total_amount: NearToken::from_near(1),
+            },
+        ]
+    );
 
     // total donation amount excluding the costs necesseary for storage
     let donation_amount = NearToken::from_near(5).saturating_sub(STORAGE_COST.saturating_mul(2));
