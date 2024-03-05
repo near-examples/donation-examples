@@ -7,4 +7,4 @@ cargo test
 ./build.sh
 cd sandbox-ts
 npm i
-npm run test -- -- "../target/wasm32-unknown-unknown/release/contract.wasm"
+npm run test -- -- "../target/wasm32-unknown-unknown/release/donation.wasm"
