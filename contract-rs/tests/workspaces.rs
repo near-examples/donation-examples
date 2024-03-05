@@ -75,11 +75,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let donation_vec: Vec<Donation> = contract
         .view("get_donations")
-        .args_json(json!({"from_index": 1}))
+        .args_json(json!({}))
         .await?
         .json()?;
 
-    assert_eq!(donation_vec.len(), 1);
+    assert_eq!(donation_vec.len(), 2);
 
     // total donation amount excluding the costs necesseary for storage
     let donation_amount = NearToken::from_near(5).saturating_sub(STORAGE_COST.saturating_mul(2));
