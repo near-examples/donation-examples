@@ -31,7 +31,7 @@ The contract will be automatically initialized with a default beneficiary. To
 initialize the contract yourself do:
 
 ```bash
-near call <deployed-to-account> new '{"beneficiary":"<account>"}' --accountId <deployed-to-account>
+near call <deployed-to-account> init '{"beneficiary":"<account>"}' --accountId <deployed-to-account>
 ```
 
 ### Get Beneficiary
@@ -121,13 +121,13 @@ near call <deployed-to-account> donate --amount 1 --accountId <account>
 ### Get Number of Donors
 
 ```bash
-near view <deployed-to-account> get_number_of_donors
+near view <deployed-to-account> number_of_donors
 ```
 
 ### Get Donations for Account
 
 ```bash
-near view <deployed-to-account> get_donations_for_account '{"account_id":"<account>"}'
+near view <deployed-to-account> get_donation_for_account '{"account_id":"<account>"}'
 ```
 
 ### Get Total Donations
