@@ -1,6 +1,6 @@
 # Donation Contract
 
-The smart contract exposes multiple methods to handle donating money to a
+The smart contract exposes multiple methods to handle donating NEAR Tokens to a
 beneficiary set on initialization.
 
 ## How to Build Locally?
