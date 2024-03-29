@@ -1,15 +1,11 @@
 // Find all our documentation at https://docs.near.org
-use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
-use near_sdk::{near_bindgen, AccountId, NearToken};
+use near_sdk::{near, AccountId, NearToken};
 
 mod donation;
 
 // Define the contract structure
-#[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
-#[borsh(crate = "near_sdk::borsh")]
-
+#[near(contract_state)]
 pub struct Contract {
     pub beneficiary: AccountId,
     pub donations: UnorderedMap<AccountId, NearToken>,
@@ -26,7 +22,7 @@ impl Default for Contract {
 }
 
 // Implement the contract structure
-#[near_bindgen]
+#[near]
 impl Contract {
     // Public Method - but only callable by env::current_account_id()
     // initializes the contract with a beneficiary
