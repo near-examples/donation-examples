@@ -1,36 +1,41 @@
 {
-  "name": "my-near-app",
+  "name": "hello-near",
   "version": "1.0.0",
-  "license": "(MIT AND Apache-2.0)",
-  "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html --public-url ./",
-    "test:e2e": "npm run start:headless & npm run cypress:run",
-    "cypress:run": "cd .cypress && cypress run",
-    "cypress:open": "cypress open --browser chromium"
+  "private": true,
+  "engines": {
+    "node": ">=18"
   },
-  "devDependencies": {
-    "env-cmd": "^10.1.0",
-    "events": "^3.3.0",
-    "nodemon": "^2.0.16",
-    "parcel": "^2.7.0",
-    "process": "^0.11.10",
-    "typescript": "^4.7.2",
-    "ts-node": "^10.8.0",
-    "cypress": "^11.2.0"
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@near-wallet-selector/core": "^7.0.0",
-    "@near-wallet-selector/ledger": "^7.0.0",
-    "@near-wallet-selector/math-wallet": "^7.0.0",
-    "@near-wallet-selector/meteor-wallet": "^7.0.0",
-    "@near-wallet-selector/modal-ui": "^7.0.0",
-    "@near-wallet-selector/my-near-wallet": "^7.0.0",
-    "@near-wallet-selector/near-wallet": "^7.0.0",
-    "@near-wallet-selector/nightly": "^7.0.0",
-    "@near-wallet-selector/nightly-connect": "^7.0.0",
-    "@near-wallet-selector/sender": "^7.0.0",
-    "@near-wallet-selector/wallet-connect": "^7.0.0",
-    "near-api-js": "^0.44.2"
+    "@near-wallet-selector/core": "^8.9.7",
+    "@near-wallet-selector/here-wallet": "^8.9.7",
+    "@near-wallet-selector/modal-ui": "^8.9.7",
+    "@near-wallet-selector/my-near-wallet": "^8.9.7",
+    "@web3-onboard/core": "^2.21.5",
+    "@web3-onboard/injected-wallets": "^2.10.15",
+    "@web3-onboard/ledger": "^2.6.0",
+    "@web3-onboard/react": "^2.8.16",
+    "@web3-onboard/walletconnect": "^2.5.4",
+    "base64-js": "^1.5.1",
+    "ieee754": "^1.2.1",
+    "near-api-js": "^3.0.4",
+    "near-social-vm": "github:gagdiez/VM" ,
+    "next": "14.2.0",
+    "pino-pretty": "^11.0.0",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.10.2",
+    "react-bootstrap-icons": "^1.11.4",
+    "react-dom": "^18.2.0",
+    "react-singleton-hook": "^4.0.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.0",
+    "eslint-config-next": "14.2.0"
   }
 }
