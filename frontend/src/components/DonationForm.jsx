@@ -20,9 +20,6 @@ const DonationForm = () =>{
     const handleSubmit = async (event) => {
         event.preventDefault()
 
-        // get elements from the form using their id attribute
-        const { fieldset, donation } = event.target.elements
-
         try {
             let deposit = utils.format.parseNearAmount(amount.toString())
             await wallet.callMethod({ contractId: DonationNearContract, method: "donate", deposit })
@@ -36,6 +33,7 @@ const DonationForm = () =>{
         }
 
     }
+    
     return <>
       <div className="row mb-3">
                     <div className="col-3">
