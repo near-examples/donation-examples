@@ -7,23 +7,24 @@ const DonationsTable = () => {
   const { wallet } = useStore();
   const [donations, setDonations] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
-  const donationsPerPage = 10;
+  const [lastPage, setLastPage] = useState(0)
+  const donationsPerPage = 1;
 
   const getDonations = async (page) => {
     const number_of_donors = await wallet.viewMethod({ contractId: DonationNearContract, method: "number_of_donors" });
+    setLastPage(Math.ceil(number_of_donors/donationsPerPage))
     const fromIndex = (page - 1) * donationsPerPage;
-    console.log({ fromIndex, donationsPerPage });
     const donations = await wallet.viewMethod({
       contractId: DonationNearContract,
       method: "get_donations",
       args: {
         from_index: fromIndex.toString(),
-        limit: (fromIndex + donationsPerPage).toString()
+        limit:  donationsPerPage.toString()
       }
     });
     return donations;
   };
-
+  console.log({ donationsPerPage ,lastPage,currentPage});
   const loadDonations = async () => {
     if (!wallet) return;
     const loadedDonations = await getDonations(currentPage);
@@ -44,8 +45,6 @@ const DonationsTable = () => {
 
   return (
     <div>
-
-
       <table className="table table-striped">
         <thead>
           <tr>
@@ -67,9 +66,9 @@ const DonationsTable = () => {
         </button>
         <span className="mx-2">Page {currentPage}</span>
         <button
-          className={`btn btn-primary btn-sm ${donations.length < donationsPerPage ? 'disabled' : ''}`}
+          className={`btn btn-primary btn-sm ${lastPage <= currentPage ? 'disabled' : ''}`}
           onClick={goToNextPage}
-          disabled={donations.length < donationsPerPage}
+          disabled={lastPage <= currentPage}
         >
           Next
         </button>
