@@ -24,7 +24,7 @@ const DonationsTable = () => {
     });
     return donations;
   };
-  console.log({ donationsPerPage ,lastPage,currentPage});
+
   const loadDonations = async () => {
     if (!wallet) return;
     const loadedDonations = await getDonations(currentPage);
