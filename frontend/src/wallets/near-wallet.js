@@ -117,7 +117,7 @@ export class Wallet {
 		deposit = NO_DEPOSIT,
 	}) => {
 		// Sign a transaction with the "FunctionCall" action
-		return await this.selectedWallet.signAndSendTransaction({
+		const outcome = await this.selectedWallet.signAndSendTransaction({
 			signerId: this.accountId,
 			receiverId: contractId,
 			actions: [
@@ -132,6 +132,8 @@ export class Wallet {
 				},
 			],
 		});
+
+		return providers.getTransactionLastResult(outcome);
 	};
 
 	/**
