@@ -8,7 +8,7 @@ const DonationsTable = () => {
 	const [donations, setDonations] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [lastPage, setLastPage] = useState(0);
-	const donationsPerPage = 1;
+	const donationsPerPage = 5;
 
 	const getDonations = async (page) => {
 		const number_of_donors = await wallet.viewMethod({
