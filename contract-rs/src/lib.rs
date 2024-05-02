@@ -1,24 +1,15 @@
 // Find all our documentation at https://docs.near.org
 use near_sdk::collections::UnorderedMap;
-use near_sdk::{near, AccountId, NearToken};
+use near_sdk::{near, AccountId, NearToken, PanicOnDefault};
 
 mod donation;
 
 // Define the contract structure
 #[near(contract_state)]
+#[derive(PanicOnDefault)]
 pub struct Contract {
     pub beneficiary: AccountId,
     pub donations: UnorderedMap<AccountId, NearToken>,
-}
-
-// Define the default, which automatically initializes the contract
-impl Default for Contract {
-    fn default() -> Self {
-        Self {
-            beneficiary: "v2.faucet.nonofficial.testnet".parse().unwrap(),
-            donations: UnorderedMap::new(b"d"),
-        }
-    }
 }
 
 // Implement the contract structure
