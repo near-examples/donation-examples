@@ -4,7 +4,6 @@ use near_sdk::{near, AccountId, NearToken, PanicOnDefault};
 
 mod donation;
 
-// Define the contract structure
 #[near(contract_state)]
 #[derive(PanicOnDefault)]
 pub struct Contract {
@@ -12,13 +11,10 @@ pub struct Contract {
     pub donations: UnorderedMap<AccountId, NearToken>,
 }
 
-// Implement the contract structure
 #[near]
 impl Contract {
-    // Public Method - but only callable by env::current_account_id()
-    // initializes the contract with a beneficiary
     #[init]
-    #[private]
+    #[private] // only callable by the contract's account
     pub fn init(beneficiary: AccountId) -> Self {
         Self {
             beneficiary,
@@ -26,14 +22,11 @@ impl Contract {
         }
     }
 
-    // Public Method - get the current beneficiary
     pub fn get_beneficiary(&self) -> &AccountId {
         &self.beneficiary
     }
 
-    // Public Method - but only callable by env::current_account_id()
-    // sets the beneficiary
-    #[private]
+    #[private] // only callable by the contract's account
     pub fn change_beneficiary(&mut self, new_beneficiary: AccountId) {
         self.beneficiary = new_beneficiary;
     }
@@ -72,7 +65,7 @@ mod tests {
         let first_donation = contract.get_donation_for_account("donor_a".parse().unwrap());
 
         // Check the donation was recorded correctly
-        assert_eq!(first_donation.total_amount, ONE_NEAR);
+        assert_eq!(u128::from(first_donation.total_amount), ONE_NEAR.as_yoctonear());
 
         // Make another donation
         set_context("donor_b", ONE_NEAR.saturating_mul(2));
@@ -80,7 +73,7 @@ mod tests {
         let second_donation = contract.get_donation_for_account("donor_b".parse().unwrap());
 
         // Check the donation was recorded correctly
-        assert_eq!(second_donation.total_amount, ONE_NEAR.saturating_mul(2));
+        assert_eq!(u128::from(second_donation.total_amount), ONE_NEAR.saturating_mul(2).as_yoctonear());
 
         // User A makes another donation on top of their original
         set_context("donor_a", ONE_NEAR);
@@ -88,9 +81,9 @@ mod tests {
         let first_donation = contract.get_donation_for_account("donor_a".parse().unwrap());
 
         // Check the donation was recorded correctly
-        assert_eq!(first_donation.total_amount, ONE_NEAR.saturating_mul(2));
+        assert_eq!(u128::from(first_donation.total_amount), ONE_NEAR.saturating_mul(2).as_yoctonear());
 
-        assert_eq!(contract.number_of_donors(), 2);
+        assert_eq!(u64::from(contract.number_of_donors()), 2);
     }
 
     // Auxiliar fn: create a mock context

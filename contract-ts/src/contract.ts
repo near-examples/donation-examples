@@ -1,6 +1,5 @@
-import { NearBindgen, near, call, view, initialize, UnorderedMap } from 'near-sdk-js'
+import { NearBindgen, near, call, view, initialize, UnorderedMap, assert } from 'near-sdk-js'
 
-import { assert } from './utils'
 import { Donation, STORAGE_COST } from './model'
 
 @NearBindgen({requireInit: true})
