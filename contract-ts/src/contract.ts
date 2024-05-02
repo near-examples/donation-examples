@@ -6,7 +6,7 @@ import { Donation, STORAGE_COST } from './model'
 @NearBindgen({requireInit: true})
 class DonationContract {
   beneficiary: string = "";
-  donations = new UnorderedMap<bigint>('map-uid-1');
+  donations = new UnorderedMap<bigint>('uid-1');
 
   @initialize({ privateFunction: true })
   init({ beneficiary }: { beneficiary: string }) {
