@@ -1,14 +1,12 @@
 use near_sdk::json_types::{U128, U64};
-use near_sdk::serde::Serialize;
-use near_sdk::{env, log, near, require, AccountId, NearSchema, NearToken, Promise};
+use near_sdk::{env, log, near, require, AccountId, NearToken, Promise};
 
 pub const STORAGE_COST: NearToken = NearToken::from_millinear(1);
 
 use crate::Contract;
 use crate::ContractExt;
 
-#[derive(NearSchema, Serialize)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [json])]
 pub struct Donation {
     pub account_id: AccountId,
     pub total_amount: U128,
