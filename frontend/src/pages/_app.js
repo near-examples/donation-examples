@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import '@/styles/globals.css';
 import { NearContext } from '@/context';
-import { Navigation } from '@/components/navigation';
+import { Navigation } from '@/components/Navigation';
 
 import { Wallet } from '@/wallets/near';
 import { NetworkId } from '@/config';
