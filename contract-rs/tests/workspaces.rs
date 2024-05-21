@@ -1,4 +1,4 @@
-use near_sdk::AccountId;
+use near_sdk::{json_types::{U128, U64}, AccountId};
 use near_workspaces::types::NearToken;
 use serde_json::json;
 
@@ -51,7 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?
         .into_result();
 
-    let number_of_donors: u64 = contract
+    let number_of_donors: U64 = contract
         .view("number_of_donors")
         .args_json({})
         .await?
@@ -61,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[serde(crate = "near_sdk::serde")]
     struct Donation {
         account_id: AccountId,
-        total_amount: NearToken,
+        total_amount: U128,
     }
 
     let donation: Donation = contract
@@ -70,8 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?
         .json()?;
 
-    assert_eq!(number_of_donors, 2);
-    assert_eq!(donation.total_amount, NearToken::from_near(4));
+    assert_eq!(number_of_donors, U64::from(2));
+    assert_eq!(u128::from(donation.total_amount), NearToken::from_near(4).as_yoctonear());
 
     let donation_vec: Vec<Donation> = contract
         .view("get_donations")
@@ -84,11 +84,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         vec![
             Donation {
                 account_id: alice_account.id().clone(),
-                total_amount: NearToken::from_near(4),
+                total_amount: U128::from(NearToken::from_near(4).as_yoctonear()),
             },
             Donation {
                 account_id: bob_account.id().clone(),
-                total_amount: NearToken::from_near(1),
+                total_amount: U128::from(NearToken::from_near(1).as_yoctonear()),
             },
         ]
     );

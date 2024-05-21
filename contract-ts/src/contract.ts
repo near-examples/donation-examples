@@ -1,12 +1,11 @@
-import { NearBindgen, near, call, view, initialize, UnorderedMap } from 'near-sdk-js'
+import { NearBindgen, near, call, view, initialize, UnorderedMap, assert } from 'near-sdk-js'
 
-import { assert } from './utils'
 import { Donation, STORAGE_COST } from './model'
 
 @NearBindgen({requireInit: true})
 class DonationContract {
   beneficiary: string = "";
-  donations = new UnorderedMap<bigint>('map-uid-1');
+  donations = new UnorderedMap<bigint>('uid-1');
 
   @initialize({ privateFunction: true })
   init({ beneficiary }: { beneficiary: string }) {

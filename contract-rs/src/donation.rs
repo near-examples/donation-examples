@@ -1,22 +1,18 @@
-use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
-use near_sdk::serde::Serialize;
-use near_sdk::{env, log, near_bindgen, require, AccountId, NearSchema, NearToken, Promise};
+use near_sdk::json_types::{U128, U64};
+use near_sdk::{env, log, near, require, AccountId, NearToken, Promise};
 
 pub const STORAGE_COST: NearToken = NearToken::from_millinear(1);
 
 use crate::Contract;
 use crate::ContractExt;
 
-#[derive(NearSchema, BorshDeserialize, BorshSerialize, Serialize)]
-#[serde(crate = "near_sdk::serde")]
-#[borsh(crate = "near_sdk::borsh")]
-#[abi(json, borsh)]
+#[near(serializers = [json])]
 pub struct Donation {
     pub account_id: AccountId,
-    pub total_amount: NearToken,
+    pub total_amount: U128,
 }
 
-#[near_bindgen]
+#[near]
 impl Contract {
     #[payable]
     pub fn donate(&mut self) -> String {
@@ -64,24 +60,26 @@ impl Contract {
         donated_so_far.to_string()
     }
 
-    // Public Method - get donation by account ID
     pub fn get_donation_for_account(&self, account_id: AccountId) -> Donation {
+        let amount = self
+            .donations
+            .get(&account_id)
+            .unwrap_or(NearToken::from_near(0))
+            .as_yoctonear();
+
         Donation {
             account_id: account_id.clone(),
-            total_amount: self
-                .donations
-                .get(&account_id)
-                .unwrap_or(NearToken::from_near(0)),
+            total_amount: U128::from(amount),
         }
     }
 
     // Public Method - get total number of donors
-    pub fn number_of_donors(&self) -> u64 {
-        self.donations.len()
+    pub fn number_of_donors(&self) -> U64 {
+        U64::from(self.donations.len())
     }
 
     // Public Method - paginate through all donations on the contract
-    pub fn get_donations(&self, from_index: Option<u64>, limit: Option<u64>) -> Vec<Donation> {
+    pub fn get_donations(&self, from_index: Option<u32>, limit: Option<u32>) -> Vec<Donation> {
         // where to start pagination - if we have a from_index, we'll use that - otherwise start from 0 index
         let start = from_index.unwrap_or(0);
 
@@ -91,7 +89,7 @@ impl Contract {
             .take(limit.unwrap_or(10) as usize)
             .map(|(account_id, total_amount)| Donation {
                 account_id,
-                total_amount,
+                total_amount: U128::from(total_amount.as_yoctonear()),
             })
             .collect()
     }
