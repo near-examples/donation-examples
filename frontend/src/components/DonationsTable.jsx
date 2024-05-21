@@ -1,10 +1,11 @@
-import { DonationNearContract } from "@/config";
-import { useStore } from "@/layout";
 import { utils } from "near-api-js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+
+import { DonationNearContract } from "@/config";
+import { NearContext } from "@/context";
 
 const DonationsTable = () => {
-	const { wallet } = useStore();
+	const { wallet } = useContext(NearContext);
 	const [donations, setDonations] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [lastPage, setLastPage] = useState(0);
@@ -15,6 +16,7 @@ const DonationsTable = () => {
 			contractId: DonationNearContract,
 			method: "number_of_donors",
 		});
+
 		setLastPage(Math.ceil(number_of_donors / donationsPerPage));
 		const fromIndex = (page - 1) * donationsPerPage;
 		const donations = await wallet.viewMethod({
@@ -28,22 +30,18 @@ const DonationsTable = () => {
 		return donations;
 	};
 
-	const loadDonations = async () => {
-		if (!wallet) return;
-		const loadedDonations = await getDonations(currentPage);
-		setDonations(loadedDonations);
-	};
-
 	useEffect(() => {
-		loadDonations();
+		if (!wallet) return;
+		getDonations(currentPage)
+			.then(loadedDonations => setDonations(loadedDonations));
 	}, [wallet, currentPage]);
 
 	const goToNextPage = () => {
-		setCurrentPage((prevPage) => prevPage + 1);
+		setCurrentPage(prevPage => prevPage + 1);
 	};
 
 	const goToPrevPage = () => {
-		setCurrentPage((prevPage) => prevPage - 1);
+		setCurrentPage(prevPage => prevPage - 1);
 	};
 
 	return (
@@ -66,9 +64,7 @@ const DonationsTable = () => {
 			</table>
 			<div>
 				<button
-					className={`btn btn-primary btn-sm ${
-						currentPage === 1 ? "disabled" : ""
-					}`}
+					className={`btn btn-primary btn-sm ${currentPage === 1 ? "disabled" : ""}`}
 					onClick={goToPrevPage}
 					disabled={currentPage === 1}
 				>
@@ -76,9 +72,7 @@ const DonationsTable = () => {
 				</button>
 				<span className="mx-2">Page {currentPage}</span>
 				<button
-					className={`btn btn-primary btn-sm ${
-						lastPage <= currentPage ? "disabled" : ""
-					}`}
+					className={`btn btn-primary btn-sm ${lastPage <= currentPage ? "disabled" : ""}`}
 					onClick={goToNextPage}
 					disabled={lastPage <= currentPage}
 				>

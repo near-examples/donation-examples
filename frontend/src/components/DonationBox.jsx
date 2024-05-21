@@ -1,16 +1,9 @@
-import { useStore } from "@/layout";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useContext } from "react";
 import DonationForm from "./DonationForm";
+import { NearContext } from '@/context';
 
 const DonationBox = () => {
-	const { signedAccountId } = useStore();
-
-	const [loggedIn, setLoggedIn] = useState(false);
-
-	useEffect(() => {
-		setLoggedIn(!!signedAccountId);
-	}, [signedAccountId]);
+  const { signedAccountId, wallet } = useContext(NearContext);
 
 	return (
 		<div className="card mt-4">
@@ -20,7 +13,7 @@ const DonationBox = () => {
 				</h4>
 			</div>
 			<div className="bg-light p-3">
-				{loggedIn ? (
+				{signedAccountId ? (
 					<DonationForm />
 				) : (
 					<p className="mb-3">

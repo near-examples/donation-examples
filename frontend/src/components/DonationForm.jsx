@@ -1,11 +1,11 @@
-import { useStore } from "@/layout";
 import { utils } from "near-api-js";
+import { useState, useContext } from "react";
 
-const { DonationNearContract } = require("@/config");
-const { useState } = require("react");
+import { NearContext } from "@/context";
+import { DonationNearContract } from "@/config";
 
 const DonationForm = () => {
-	const { wallet } = useStore();
+	const { wallet } = useContext(NearContext);
 	const [amount, setAmount] = useState(0);
 
 	const setDonation = async (amount) => {
@@ -31,8 +31,8 @@ const DonationForm = () => {
 		} catch (e) {
 			alert(
 				"Something went wrong! " +
-					"Maybe you need to sign out and back in? " +
-					"Check your browser console for more info.",
+				"Maybe you need to sign out and back in? " +
+				"Check your browser console for more info.",
 			);
 			throw e;
 		}
@@ -41,38 +41,16 @@ const DonationForm = () => {
 	return (
 		<>
 			<div className="row mb-3">
-				<div className="col-3">
-					<button
-						className="btn btn-outline-primary btn-block"
-						onClick={() => setDonation(10)}
-					>
-						$ 10
-					</button>
-				</div>
-				<div className="col-3">
-					<button
-						className="btn btn-outline-primary btn-block"
-						onClick={() => setDonation(20)}
-					>
-						$ 20
-					</button>
-				</div>
-				<div className="col-3">
-					<button
-						className="btn btn-outline-primary btn-block"
-						onClick={() => setDonation(50)}
-					>
-						$ 50
-					</button>
-				</div>
-				<div className="col-3">
-					<button
-						className="btn btn-outline-primary btn-block"
-						onClick={() => setDonation(100)}
-					>
-						$ 100
-					</button>
-				</div>
+				{[10, 20, 50, 100].map((amount) => (
+					<div className="col-3" key={amount}>
+						<button
+							className="btn btn-outline-primary btn-block"
+							onClick={() => setDonation(amount)}
+						>
+							$ {amount}
+						</button>
+					</div>
+				))}
 			</div>
 			<form onSubmit={handleSubmit}>
 				<div className="mb-3">
