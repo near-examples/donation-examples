@@ -1,9 +1,12 @@
-import { Worker, NEAR, NearAccount } from "near-workspaces";
-import anyTest, { TestFn } from "ava";
+import anyTest from 'ava';
+import { Worker, NEAR } from 'near-workspaces';
 import { setDefaultResultOrder } from 'dns'; setDefaultResultOrder('ipv4first'); // temp fix for node >v17
 
-// Global context
-const test = anyTest as TestFn<{ worker: Worker, accounts: Record<string, NearAccount> }>;
+/**
+ *  @typedef {import('near-workspaces').NearAccount} NearAccount
+ *  @type {import('ava').TestFn<{worker: Worker, accounts: Record<string, NearAccount>}>}
+ */
+const test = anyTest;
 
 test.beforeEach(async (t) => {
   // Init the worker and start a Sandbox server
@@ -27,12 +30,12 @@ test.beforeEach(async (t) => {
   const contract = await root.createSubAccount("contract", {
     initialBalance: NEAR.parse("30 N").toJSON(),
   });
-  
+
   // Deploy the contract.
   await contract.deploy(process.argv[2]);
 
   // Initialize beneficiary
-  await contract.call(contract, "init", {beneficiary: beneficiary.accountId})
+  await contract.call(contract, "init", { beneficiary: beneficiary.accountId })
 
   // Save state for test runs, it is unique for each test
   t.context.accounts = { root, contract, beneficiary, alice, bob };
@@ -64,13 +67,15 @@ test("records the donation", async (t) => {
 
   await bob.call(contract, "donate", {}, { attachedDeposit: NEAR.parse("2 N").toString() });
 
-  const donation: Donation = await contract.view("get_donation_for_account", { account_id: bob.accountId });
+  /** @type {Donation} */
+  const donation = await contract.view("get_donation_for_account", { account_id: bob.accountId });
 
   t.is(donation.account_id, bob.accountId);
   t.is(donation.total_amount, NEAR.parse("2 N").toString());
 });
 
-class Donation{
-  account_id: string = "";
-  total_amount: string = "";
-}
+/**
+ * @typedef Donation
+ * @property {string} account_id
+ * @property {string} total_amount
+ */
