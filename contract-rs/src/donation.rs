@@ -31,6 +31,7 @@ impl Contract {
         let mut donated_so_far: NearToken = self
             .donations
             .get(&donor)
+            .cloned()
             .unwrap_or(NearToken::from_near(0));
 
         let to_transfer = if donated_so_far.is_zero() {
@@ -44,7 +45,7 @@ impl Contract {
         // Persist in storage the amount donated so far
         donated_so_far = donated_so_far.saturating_add(donation_amount);
 
-        self.donations.insert(&donor, &donated_so_far);
+        self.donations.insert(donor.clone(), donated_so_far);
 
         log!(
             "Thank you {} for donating {}! You donated a total of {}",
@@ -64,6 +65,7 @@ impl Contract {
         let amount = self
             .donations
             .get(&account_id)
+            .cloned()
             .unwrap_or(NearToken::from_near(0))
             .as_yoctonear();
 
@@ -75,7 +77,7 @@ impl Contract {
 
     // Public Method - get total number of donors
     pub fn number_of_donors(&self) -> U64 {
-        U64::from(self.donations.len())
+        U64::from(self.donations.len() as u64)
     }
 
     // Public Method - paginate through all donations on the contract
@@ -88,7 +90,7 @@ impl Contract {
             .skip(start as usize)
             .take(limit.unwrap_or(10) as usize)
             .map(|(account_id, total_amount)| Donation {
-                account_id,
+                account_id: account_id.clone(),
                 total_amount: U128::from(total_amount.as_yoctonear()),
             })
             .collect()
