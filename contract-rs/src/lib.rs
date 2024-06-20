@@ -1,5 +1,5 @@
 // Find all our documentation at https://docs.near.org
-use near_sdk::collections::UnorderedMap;
+use near_sdk::store::UnorderedMap;
 use near_sdk::{near, AccountId, NearToken, PanicOnDefault};
 
 mod donation;
@@ -47,7 +47,7 @@ mod tests {
     const ONE_NEAR: NearToken = NearToken::from_near(1);
 
     #[test]
-    fn initializes() {
+    fn initalizes() {
         let contract = Contract::init(BENEFICIARY.parse().unwrap());
         assert_eq!(
             contract.beneficiary,
