@@ -1,8 +1,17 @@
-import { NearBindgen, near, call, view, initialize, UnorderedMap, assert } from 'near-sdk-js'
+import { NearBindgen, near, call, view, initialize, UnorderedMap, assert, encode, decode } from 'near-sdk-js'
 
 import { Donation, STORAGE_COST } from './model'
+import * as borsh from 'borsh';
 
-@NearBindgen({requireInit: true})
+@NearBindgen({
+  requireInit: true,
+  serializer(value) {
+    return borsh.serialize(schema, value);
+  },
+  deserializer(value) {
+    return borsh.deserialize(schema, value);
+  },
+})
 class DonationContract {
   beneficiary: string = "";
   donations = new UnorderedMap<bigint>('uid-1');
@@ -18,7 +27,10 @@ class DonationContract {
     let donor = near.predecessorAccountId();
     let donationAmount: bigint = near.attachedDeposit() as bigint;
 
-    let donatedSoFar = this.donations.get(donor, {defaultValue: BigInt(0)})
+    let donatedSoFar = this.donations.get(donor, {
+      defaultValue: BigInt(0),
+      deserializer: donationDeserializer
+    });
     let toTransfer = donationAmount;
 
     // This is the user's first donation, lets register it, which increases storage
@@ -31,7 +43,10 @@ class DonationContract {
 
     // Persist in storage the amount donated so far
     donatedSoFar += donationAmount
-    this.donations.set(donor, donatedSoFar)
+    this.donations.set(donor, donatedSoFar, {
+      serializer: donationSerializer,
+      deserializer: donationDeserializer
+    });
     near.log(`Thank you ${donor} for donating ${donationAmount}! You donated a total of ${donatedSoFar}`);
 
     // Send the money to the beneficiary
@@ -69,7 +84,54 @@ class DonationContract {
   get_donation_for_account({ account_id }: { account_id: string }): Donation {
     return {
       account_id,
-      total_amount: this.donations.get(account_id).toString()
+      total_amount: this.donations
+        .get(account_id, {
+          defaultValue: BigInt(0),
+          deserializer: donationDeserializer
+        })
+        .toString()
     }
   }
 }
+
+const donationSchema: borsh.Schema = 'u128';
+
+function donationSerializer(value) {
+  const serialized = borsh.serialize(donationSchema, value).toString();
+
+  return encode(serialized);
+}
+
+function donationDeserializer(value) {
+  const decoded = decode(value);
+
+  // @ts-expect-error string[] also works
+  const bytes = Uint8Array.from(decoded.split(','));
+
+  return borsh.deserialize(donationSchema, bytes);
+}
+
+const schema: borsh.Schema = {
+  struct: {
+    beneficiary: 'string',
+    // UnorderedMap
+    donations: {
+      struct: {
+        prefix: 'string',
+        // Vector
+        _keys: {
+          struct: {
+            prefix: 'string',
+            length: 'u32',
+          },
+        },
+        // LookupMap
+        values: {
+          struct: {
+            keyPrefix: 'string',
+          },
+        },
+      },
+    },
+  },
+};
