@@ -2,10 +2,15 @@ import { NearBindgen, near, call, view, initialize, UnorderedMap, assert } from 
 
 import { Donation, STORAGE_COST } from './model'
 
-@NearBindgen({requireInit: true})
+@NearBindgen({ requireInit: true })
 class DonationContract {
   beneficiary: string = "";
   donations = new UnorderedMap<bigint>('uid-1');
+
+  static schema = {
+    beneficiary: "string",
+    donations: { class: UnorderedMap, value: "bigint" }
+  }
 
   @initialize({ privateFunction: true })
   init({ beneficiary }: { beneficiary: string }) {
@@ -18,7 +23,7 @@ class DonationContract {
     let donor = near.predecessorAccountId();
     let donationAmount: bigint = near.attachedDeposit() as bigint;
 
-    let donatedSoFar = this.donations.get(donor, {defaultValue: BigInt(0)})
+    let donatedSoFar = this.donations.get(donor, { defaultValue: BigInt(0) })
     let toTransfer = donationAmount;
 
     // This is the user's first donation, lets register it, which increases storage
@@ -57,11 +62,11 @@ class DonationContract {
   get_donations({ from_index = 0, limit = 50 }: { from_index: number, limit: number }): Donation[] {
     let ret: Donation[] = []
 
-    for (const account_id of this.donations.keys({start:from_index,limit})) {
+    for (const account_id of this.donations.keys({ start: from_index, limit })) {
       const donation: Donation = this.get_donation_for_account({ account_id })
       ret.push(donation)
     }
-    
+
     return ret
   }
 
