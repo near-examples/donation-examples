@@ -22,7 +22,7 @@ const DonationForm = ({ setMyDonation }) => {
     event.preventDefault();
 
     let deposit = utils.format.parseNearAmount(amount.toString());
-    setMyDonation(amount);
+
     wallet
       .callMethod({
         contractId: DonationNearContract,
@@ -32,6 +32,8 @@ const DonationForm = ({ setMyDonation }) => {
       .catch(() => {
         setMyDonation(-Number(amount));
       });
+    
+    setMyDonation(amount);
   };
 
   return (
