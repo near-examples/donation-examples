@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
 /**
  * @typedef NearContext
@@ -9,5 +9,5 @@ import { createContext } from 'react';
 /** @type {import ('react').Context<NearContext>} */
 export const NearContext = createContext({
   wallet: undefined,
-  signedAccountId: ''
+  signedAccountId: "",
 });

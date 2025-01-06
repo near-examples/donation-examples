@@ -1,5 +1,5 @@
 // Find all our documentation at https://docs.near.org
-use near_sdk::store::UnorderedMap;
+use near_sdk::store::IterableMap;
 use near_sdk::{near, AccountId, NearToken, PanicOnDefault};
 
 mod donation;
@@ -8,7 +8,7 @@ mod donation;
 #[derive(PanicOnDefault)]
 pub struct Contract {
     pub beneficiary: AccountId,
-    pub donations: UnorderedMap<AccountId, NearToken>,
+    pub donations: IterableMap<AccountId, NearToken>,
 }
 
 #[near]
@@ -18,7 +18,7 @@ impl Contract {
     pub fn init(beneficiary: AccountId) -> Self {
         Self {
             beneficiary,
-            donations: UnorderedMap::new(b"d"),
+            donations: IterableMap::new(b"d"),
         }
     }
 
