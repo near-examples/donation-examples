@@ -1,25 +1,25 @@
 import { utils } from "near-api-js";
-import { useEffect, useState, useContext } from "react";
-
+import { useEffect, useState } from "react";
+import { useWalletSelector } from '@near-wallet-selector/react-hook';
 import { DonationNearContract } from "@/config";
-import { NearContext } from "@/context";
+
 
 const DonationsTable = () => {
-  const { wallet } = useContext(NearContext);
+  const { signedAccountId, viewFunction } = useWalletSelector();
   const [donations, setDonations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(0);
   const donationsPerPage = 5;
 
   const getDonations = async (page) => {
-    const number_of_donors = await wallet.viewMethod({
+    const number_of_donors = await viewFunction({
       contractId: DonationNearContract,
       method: "number_of_donors",
     });
 
     setLastPage(Math.ceil(number_of_donors / donationsPerPage));
     const fromIndex = (page - 1) * donationsPerPage;
-    const donations = await wallet.viewMethod({
+    const donations = await viewFunction({
       contractId: DonationNearContract,
       method: "get_donations",
       args: {
@@ -31,11 +31,11 @@ const DonationsTable = () => {
   };
 
   useEffect(() => {
-    if (!wallet) return;
+    if (!signedAccountId) return;
     getDonations(currentPage).then((loadedDonations) =>
       setDonations(loadedDonations),
     );
-  }, [wallet, currentPage]);
+  }, [signedAccountId, currentPage]);
 
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);

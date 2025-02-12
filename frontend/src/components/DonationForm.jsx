@@ -1,11 +1,12 @@
 import { utils } from "near-api-js";
-import { useState, useContext } from "react";
+import { useState } from "react";
+import { useWalletSelector } from '@near-wallet-selector/react-hook';
 
-import { NearContext } from "@/context";
 import { DonationNearContract } from "@/config";
 
 const DonationForm = ({ setMyDonation }) => {
-  const { wallet } = useContext(NearContext);
+  const { callFunction } = useWalletSelector();
+
   const [amount, setAmount] = useState(0);
 
   const setDonation = async (amount) => {
@@ -23,8 +24,7 @@ const DonationForm = ({ setMyDonation }) => {
 
     let deposit = utils.format.parseNearAmount(amount.toString());
 
-    wallet
-      .callMethod({
+    callFunction({
         contractId: DonationNearContract,
         method: "donate",
         deposit,

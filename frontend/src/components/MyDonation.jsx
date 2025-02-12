@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-import { NearContext } from "@/context";
+import {useEffect, useState } from "react";
+import { useWalletSelector } from '@near-wallet-selector/react-hook';
 import { DonationNearContract } from "@/config";
 import { utils } from "near-api-js";
 
 const MyDonation = ({ myDonation }) => {
-  const { signedAccountId, wallet } = useContext(NearContext);
+  const { signedAccountId, viewFunction } = useWalletSelector();
   const [donation, setDonation] = useState(0);
 
   useEffect(() => {
@@ -16,11 +16,11 @@ const MyDonation = ({ myDonation }) => {
   }, [myDonation]);
 
   useEffect(() => {
-    if (!wallet && !signedAccountId) return;
+    if (!signedAccountId) return;
     const getMyDonations = async () => {
       if (signedAccountId.trim() === "") return;
       console.log("Getting donations for account: ", signedAccountId);
-      const loadedDonation = await wallet.viewMethod({
+      const loadedDonation = await viewFunction({
         contractId: DonationNearContract,
         method: "get_donation_for_account",
         args: {
@@ -31,7 +31,7 @@ const MyDonation = ({ myDonation }) => {
       setDonation(utils.format.formatNearAmount(loadedDonation.total_amount));
     };
     getMyDonations();
-  }, [wallet, signedAccountId]);
+  }, [signedAccountId]);
 
   return (
     <>

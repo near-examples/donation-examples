@@ -1,9 +1,9 @@
-import { useContext } from "react";
 import DonationForm from "./DonationForm";
-import { NearContext } from "@/context";
+import { useWalletSelector } from '@near-wallet-selector/react-hook';
 
 const DonationBox = ({ setMyDonation }) => {
-  const { signedAccountId } = useContext(NearContext);
+  const { signedAccountId } = useWalletSelector();
+
 
   return (
     <div className="card mt-4">
