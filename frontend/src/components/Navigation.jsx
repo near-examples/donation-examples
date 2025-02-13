@@ -1,26 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useContext } from "react";
-
-import { NearContext } from "@/context";
+import { useEffect, useState } from "react";
 import NearLogo from "/public/near-logo.svg";
+import { useWalletSelector } from '@near-wallet-selector/react-hook';
 
 export const Navigation = () => {
-  const { signedAccountId, wallet } = useContext(NearContext);
+  const { signedAccountId, signIn, signOut } = useWalletSelector();
   const [action, setAction] = useState(() => {});
   const [label, setLabel] = useState("Loading...");
 
   useEffect(() => {
-    if (!wallet) return;
 
     if (signedAccountId) {
-      setAction(() => wallet.signOut);
+      setAction(() => signOut);
       setLabel(`Logout ${signedAccountId}`);
     } else {
-      setAction(() => wallet.signIn);
+      setAction(() => signIn);
       setLabel("Login");
     }
-  }, [signedAccountId, wallet]);
+  }, [signedAccountId]);
 
   return (
     <nav className="navbar navbar-expand-lg">
