@@ -10,7 +10,7 @@ import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import { setupNearMobileWallet } from '@near-wallet-selector/near-mobile-wallet';
 import { setupWelldoneWallet } from '@near-wallet-selector/welldone-wallet';
 import { WalletSelectorProvider } from '@near-wallet-selector/react-hook';
-import { wagmiConfig, web3Modal } from '@/wallets/web3modal';
+import { wagmiAdapter, web3Modal } from '@/wallets/web3modal';
 import { Navigation } from "@/components/Navigation";
 import { DonationNearContract, NetworkId } from "@/config";
 import "@/styles/globals.css";
@@ -20,7 +20,7 @@ const walletSelectorConfig = {
   network: NetworkId,
   createAccessKeyFor: DonationNearContract,
   modules: [
-    setupEthereumWallets({ wagmiConfig, web3Modal, alwaysOnboardDuringSignIn: true }),
+    setupEthereumWallets({ wagmiConfig: wagmiAdapter.wagmiConfig, web3Modal }),
     setupBitteWallet(),
     setupMeteorWallet(),
     setupMeteorWalletApp({contractId: DonationNearContract}),
