@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "encoding": "^0.1.13",
-    "eslint": "^9.16.0",
-    "eslint-config-next": "14.2.3"
+    "eslint": "^9.26.0",
+    "eslint-config-next": "15.3.2"
   }
 }
