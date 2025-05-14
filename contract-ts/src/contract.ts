@@ -48,7 +48,7 @@ class DonationContract {
   }
 
   @call({ privateFunction: true })
-  change_beneficiary(beneficiary) {
+  change_beneficiary(beneficiary: string) {
     this.beneficiary = beneficiary;
   }
 
@@ -74,7 +74,7 @@ class DonationContract {
   get_donation_for_account({ account_id }: { account_id: string }): Donation {
     return {
       account_id,
-      total_amount: this.donations.get(account_id).toString()
+      total_amount: this.donations.get(account_id)?.toString() || "0",
     }
   }
 }
