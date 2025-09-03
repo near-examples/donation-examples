@@ -1,3 +1,4 @@
+import { injected,walletConnect } from '@wagmi/connectors';
 import { createAppKit } from "@reown/appkit/react";
 import { reconnect } from "@wagmi/core";
 import { nearTestnet } from "@reown/appkit/networks";
