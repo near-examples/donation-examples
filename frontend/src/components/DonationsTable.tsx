@@ -1,39 +1,45 @@
 import { utils } from "near-api-js";
 import { useEffect, useState } from "react";
-import { useWalletSelector } from '@near-wallet-selector/react-hook';
+import { useNear } from "@/hooks/useNear";
 import { DonationNearContract } from "@/config";
 
+interface Donation {
+  account_id: string;
+  total_amount: string;
+}
 
-const DonationsTable = () => {
-  const { signedAccountId, viewFunction } = useWalletSelector();
-  const [donations, setDonations] = useState([]);
+export default function DonationsTable() {
+  const { signedAccountId, viewFunction } = useNear();
+  const [donations, setDonations] = useState<Donation[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(0);
   const donationsPerPage = 5;
 
-  const getDonations = async (page) => {
-    const number_of_donors = await viewFunction({
+  const getDonations = async (page: number): Promise<Donation[]> => {
+    const number_of_donors = (await viewFunction({
       contractId: DonationNearContract,
       method: "number_of_donors",
-    });
+    })) as number;
 
     setLastPage(Math.ceil(number_of_donors / donationsPerPage));
     const fromIndex = (page - 1) * donationsPerPage;
-    const donations = await viewFunction({
+
+    const donations = (await viewFunction({
       contractId: DonationNearContract,
       method: "get_donations",
       args: {
         from_index: fromIndex.toString(),
         limit: donationsPerPage.toString(),
       },
-    });
+    })) as Donation[];
+
     return donations;
   };
 
   useEffect(() => {
     if (!signedAccountId) return;
     getDonations(currentPage).then((loadedDonations) =>
-      setDonations(loadedDonations),
+      setDonations(loadedDonations)
     );
   }, [signedAccountId, currentPage]);
 
@@ -65,7 +71,9 @@ const DonationsTable = () => {
       </table>
       <div>
         <button
-          className={`btn btn-primary btn-sm ${currentPage === 1 ? "disabled" : ""}`}
+          className={`btn btn-primary btn-sm ${
+            currentPage === 1 ? "disabled" : ""
+          }`}
           onClick={goToPrevPage}
           disabled={currentPage === 1}
         >
@@ -73,7 +81,9 @@ const DonationsTable = () => {
         </button>
         <span className="mx-2">Page {currentPage}</span>
         <button
-          className={`btn btn-primary btn-sm ${lastPage <= currentPage ? "disabled" : ""}`}
+          className={`btn btn-primary btn-sm ${
+            lastPage <= currentPage ? "disabled" : ""
+          }`}
           onClick={goToNextPage}
           disabled={lastPage <= currentPage}
         >
@@ -82,6 +92,4 @@ const DonationsTable = () => {
       </div>
     </div>
   );
-};
-
-export default DonationsTable;
+}

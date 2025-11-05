@@ -1,35 +1,47 @@
-import {useEffect, useState } from "react";
-import { useWalletSelector } from '@near-wallet-selector/react-hook';
+import { useEffect, useState } from "react";
+import { useNear } from "@/hooks/useNear";
 import { DonationNearContract } from "@/config";
 import { utils } from "near-api-js";
 
-const MyDonation = ({ myDonation }) => {
-  const { signedAccountId, viewFunction } = useWalletSelector();
-  const [donation, setDonation] = useState(0);
+interface MyDonationProps {
+  myDonation?: number;
+}
+
+interface DonationResponse {
+  total_amount: string;
+}
+
+const MyDonation = ({ myDonation }: MyDonationProps) => {
+  const { signedAccountId, viewFunction } = useNear();
+  const [donation, setDonation] = useState<number>(0);
 
   useEffect(() => {
     if (!myDonation) return;
-
-    setDonation(
-      Math.round((Number(donation) + Number(myDonation)) * 100) / 100,
+    setDonation((prev) =>
+      Math.round((prev + Number(myDonation)) * 100) / 100
     );
   }, [myDonation]);
 
   useEffect(() => {
     if (!signedAccountId) return;
+
     const getMyDonations = async () => {
       if (signedAccountId.trim() === "") return;
       console.log("Getting donations for account: ", signedAccountId);
-      const loadedDonation = await viewFunction({
+
+      const loadedDonation = (await viewFunction({
         contractId: DonationNearContract,
         method: "get_donation_for_account",
-        args: {
-          account_id: signedAccountId,
-        },
-      });
+        args: { account_id: signedAccountId },
+      })) as DonationResponse;
 
-      setDonation(utils.format.formatNearAmount(loadedDonation.total_amount));
+      const formatted = parseFloat(
+        utils.format.formatNearAmount(loadedDonation.total_amount)
+      );
+
+      setDonation(formatted);
     };
+
     getMyDonations();
   }, [signedAccountId]);
 
