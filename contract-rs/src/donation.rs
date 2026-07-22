@@ -55,7 +55,7 @@ impl Contract {
         );
 
         // Send the NEAR to the beneficiary
-        Promise::new(self.beneficiary.clone()).transfer(to_transfer);
+        Promise::new(self.beneficiary.clone()).transfer(to_transfer).detach();
 
         // Return the total amount donated so far
         donated_so_far.to_string()

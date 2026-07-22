@@ -1,24 +1,27 @@
 import DonationForm from "./DonationForm";
-import { useWalletSelector } from '@near-wallet-selector/react-hook';
+import { useNearWallet } from "near-connect-hooks";
 
 const DonationBox = ({ setMyDonation }) => {
-  const { signedAccountId } = useWalletSelector();
-
+  const { signedAccountId, signIn } = useNearWallet();
 
   return (
-    <div className="card mt-4">
-      <div className="p-3 text-center">
-        <h4>
-          <strong>Donate to</strong>
-        </h4>
-      </div>
-      <div className="bg-light p-3">
+    <div className="card border-0 shadow-sm">
+      <div className="card-body p-4">
+        <h2 className="h5 mb-1">Donate</h2>
+        <p className="text-secondary small mb-4">
+          Donations are sent to the donation contract on NEAR testnet.
+        </p>
         {signedAccountId ? (
           <DonationForm setMyDonation={setMyDonation} />
         ) : (
-          <p className="mb-3">
-            Please sign in with your NEAR wallet to make a donation.
-          </p>
+          <>
+            <p className="text-secondary mb-3">
+              Connect your wallet to make a donation.
+            </p>
+            <button className="btn btn-dark w-100" onClick={() => signIn()}>
+              Connect wallet
+            </button>
+          </>
         )}
       </div>
     </div>
