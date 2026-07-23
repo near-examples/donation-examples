@@ -6,18 +6,16 @@ import { useState } from "react";
 export default function Home() {
   const [myDonation, setMyDonation] = useState(0);
   return (
-    <div className="p-4 p-sm-5">
-      <div className="row">
-        <div className="col-sm-8 pe-2 pe-sm-5">
-          <h4>My Donation</h4>
-          <MyDonation myDonation={myDonation} />
-          <h4>Latest Donations</h4>
-          <DonationsTable />
-        </div>
-        <div className="col-sm-4">
+    <main className="container py-4 py-lg-5">
+      <div className="row g-4 flex-lg-row-reverse">
+        <div className="col-lg-5 col-xl-4">
           <DonationBox setMyDonation={setMyDonation} />
         </div>
+        <div className="col-lg-7 col-xl-8">
+          <MyDonation myDonation={myDonation} />
+          <DonationsTable myDonation={myDonation} />
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

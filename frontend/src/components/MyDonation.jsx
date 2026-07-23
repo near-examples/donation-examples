@@ -1,25 +1,17 @@
-import {useEffect, useState } from "react";
-import { useWalletSelector } from '@near-wallet-selector/react-hook';
+import { useEffect, useState } from "react";
+import { useNearWallet } from "near-connect-hooks";
 import { DonationNearContract } from "@/config";
-import { utils } from "near-api-js";
+import { formatNearAmount } from "near-api-js";
 
+// myDonation is the optimistic delta of donations made this session,
+// applied on top of the on-chain total and rolled back if a donation fails
 const MyDonation = ({ myDonation }) => {
-  const { signedAccountId, viewFunction } = useWalletSelector();
-  const [donation, setDonation] = useState(0);
-
-  useEffect(() => {
-    if (!myDonation) return;
-
-    setDonation(
-      Math.round((Number(donation) + Number(myDonation)) * 100) / 100,
-    );
-  }, [myDonation]);
+  const { signedAccountId, viewFunction } = useNearWallet();
+  const [baseDonation, setBaseDonation] = useState(0);
 
   useEffect(() => {
     if (!signedAccountId) return;
     const getMyDonations = async () => {
-      if (signedAccountId.trim() === "") return;
-      console.log("Getting donations for account: ", signedAccountId);
       const loadedDonation = await viewFunction({
         contractId: DonationNearContract,
         method: "get_donation_for_account",
@@ -28,23 +20,24 @@ const MyDonation = ({ myDonation }) => {
         },
       });
 
-      setDonation(utils.format.formatNearAmount(loadedDonation.total_amount));
+      setBaseDonation(formatNearAmount(loadedDonation.total_amount));
     };
     getMyDonations();
   }, [signedAccountId]);
 
+  if (!signedAccountId) return null;
+
+  const total = Math.round((Number(baseDonation) + myDonation) * 100) / 100;
+
   return (
-    <>
-      {signedAccountId ? (
-        <p className="mb-3">
-          You have donated <strong>{donation} NEAR</strong> to the cause.
+    <div className="card border-0 shadow-sm mb-4">
+      <div className="card-body p-4">
+        <p className="text-secondary small mb-1">My donation</p>
+        <p className="fs-2 fw-semibold font-monospace mb-0">
+          {total} <span className="text-near">NEAR</span>
         </p>
-      ) : (
-        <p className="mb-3">
-          Please sign in with your NEAR wallet to make a donation.
-        </p>
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

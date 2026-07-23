@@ -1,77 +1,94 @@
 import anyTest from 'ava';
-import { Worker, NEAR } from 'near-workspaces';
-import { setDefaultResultOrder } from 'dns'; setDefaultResultOrder('ipv4first'); // temp fix for node >v17
+import { readFileSync } from 'fs';
+import { Sandbox, DEFAULT_ACCOUNT_ID, DEFAULT_PRIVATE_KEY } from 'near-sandbox';
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner, nearToYocto } from 'near-api-js';
 
 /**
- *  @typedef {import('near-workspaces').NearAccount} NearAccount
- *  @type {import('ava').TestFn<{worker: Worker, accounts: Record<string, NearAccount>}>}
+ *  @type {import('ava').TestFn<{sandbox: import('near-sandbox').Sandbox, provider: JsonRpcProvider, contract: Account, beneficiary: Account, alice: Account, bob: Account}>}
  */
 const test = anyTest;
 
 test.beforeEach(async (t) => {
-  // Init the worker and start a Sandbox server
-  const worker = t.context.worker = await Worker.init();
+  // Start a fresh sandbox for each test
+  const sandbox = await Sandbox.start({});
+  const provider = new JsonRpcProvider({ url: sandbox.rpcUrl });
 
-  const root = worker.rootAccount;
+  // All accounts share the sandbox genesis key for simplicity
+  const keyPair = KeyPair.fromString(DEFAULT_PRIVATE_KEY);
+  const signer = new KeyPairSigner(keyPair);
 
-  // define users
-  const beneficiary = await root.createSubAccount("beneficiary", {
-    initialBalance: NEAR.parse("30 N").toJSON(),
-  });
+  const root = new Account(DEFAULT_ACCOUNT_ID, provider, signer);
 
-  const alice = await root.createSubAccount("alice", {
-    initialBalance: NEAR.parse("30 N").toJSON(),
-  });
+  for (const prefix of ['contract', 'beneficiary', 'alice', 'bob']) {
+    await root.createSubAccount({
+      accountOrPrefix: prefix,
+      publicKey: keyPair.getPublicKey(),
+      nearToTransfer: nearToYocto('30'),
+    });
+  }
 
-  const bob = await root.createSubAccount("bob", {
-    initialBalance: NEAR.parse("30 N").toJSON(),
-  });
+  const contract = new Account(`contract.${DEFAULT_ACCOUNT_ID}`, provider, signer);
+  const beneficiary = new Account(`beneficiary.${DEFAULT_ACCOUNT_ID}`, provider, signer);
+  const alice = new Account(`alice.${DEFAULT_ACCOUNT_ID}`, provider, signer);
+  const bob = new Account(`bob.${DEFAULT_ACCOUNT_ID}`, provider, signer);
 
-  const contract = await root.createSubAccount("contract", {
-    initialBalance: NEAR.parse("30 N").toJSON(),
-  });
-
-  // Deploy the contract.
-  await contract.deploy(process.argv[2]);
+  // Deploy the wasm file passed by the package.json test script
+  await contract.deployContract(readFileSync(process.argv[2]));
 
   // Initialize beneficiary
-  await contract.call(contract, "init", { beneficiary: beneficiary.accountId })
+  await contract.callFunction({
+    contractId: contract.accountId,
+    methodName: 'init',
+    args: { beneficiary: beneficiary.accountId },
+  });
 
   // Save state for test runs, it is unique for each test
-  t.context.accounts = { root, contract, beneficiary, alice, bob };
+  t.context = { sandbox, provider, contract, beneficiary, alice, bob };
 });
 
 test.afterEach.always(async (t) => {
-  // Stop Sandbox server
-  await t.context.worker.tearDown().catch((error) => {
+  // Stop the sandbox and clean up temporary files
+  await t.context.sandbox.tearDown().catch((error) => {
     console.log('Failed to stop the Sandbox:', error);
   });
 });
 
-test("sends donations to the beneficiary", async (t) => {
-  const { contract, alice, beneficiary } = t.context.accounts;
+test('sends donations to the beneficiary', async (t) => {
+  const { provider, contract, alice, beneficiary } = t.context;
 
-  const balance = await beneficiary.balance();
-  const available = parseFloat(balance.available.toHuman());
+  const { amount: balance } = await provider.viewAccount({ accountId: beneficiary.accountId });
 
-  await alice.call(contract, "donate", {}, { attachedDeposit: NEAR.parse("1 N").toString() });
+  await alice.callFunction({
+    contractId: contract.accountId,
+    methodName: 'donate',
+    args: {},
+    deposit: nearToYocto('1'),
+  });
 
-  const new_balance = await beneficiary.balance();
-  const new_available = parseFloat(new_balance.available.toHuman());
+  const { amount: newBalance } = await provider.viewAccount({ accountId: beneficiary.accountId });
 
-  t.is(new_available, available + 1 - 0.001);
+  t.is(newBalance, balance + nearToYocto('1') - nearToYocto('0.001'));
 });
 
-test("records the donation", async (t) => {
-  const { contract, bob } = t.context.accounts;
+test('records the donation', async (t) => {
+  const { provider, contract, bob } = t.context;
 
-  await bob.call(contract, "donate", {}, { attachedDeposit: NEAR.parse("2 N").toString() });
+  await bob.callFunction({
+    contractId: contract.accountId,
+    methodName: 'donate',
+    args: {},
+    deposit: nearToYocto('2'),
+  });
 
   /** @type {Donation} */
-  const donation = await contract.view("get_donation_for_account", { account_id: bob.accountId });
+  const donation = await provider.callFunction({
+    contractId: contract.accountId,
+    method: 'get_donation_for_account',
+    args: { account_id: bob.accountId },
+  });
 
   t.is(donation.account_id, bob.accountId);
-  t.is(donation.total_amount, NEAR.parse("2 N").toString());
+  t.is(BigInt(donation.total_amount), nearToYocto('2'));
 });
 
 /**
