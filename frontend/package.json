@@ -12,17 +12,17 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@hot-labs/near-connect": "^0.11.4",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
-    "near-api-js": "^7.2.0",
-    "near-connect-hooks": "^1.1.6",
-    "next": "^16.2.10",
+    "function-call-key-plugin": "^2.1.0",
+    "near-api-js": "^7.3.1",
+    "next": "16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.2.10"
-  },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+  }
 }

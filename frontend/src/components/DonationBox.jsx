@@ -1,5 +1,5 @@
 import DonationForm from "./DonationForm";
-import { useNearWallet } from "near-connect-hooks";
+import { useNearWallet } from "@/components/near-provider";
 
 const DonationBox = ({ setMyDonation }) => {
   const { signedAccountId, signIn } = useNearWallet();

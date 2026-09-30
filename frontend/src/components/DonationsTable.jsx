@@ -1,6 +1,6 @@
 import { formatNearAmount } from "near-api-js";
 import { useEffect, useState } from "react";
-import { useNearWallet } from "near-connect-hooks";
+import { useNearWallet } from "@/components/near-provider";
 import { DonationNearContract } from "@/config";
 
 // myDonation is the optimistic session delta; it's added to the signed

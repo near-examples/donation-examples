@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNearWallet } from "near-connect-hooks";
+import { useNearWallet } from "@/components/near-provider";
 import { DonationNearContract } from "@/config";
 import { formatNearAmount } from "near-api-js";
 

@@ -1,12 +1,10 @@
 import { Navigation } from "@/components/Navigation";
-import { NetworkId } from "@/config";
+import { NearProvider } from "@/components/near-provider";
 import "@/styles/globals.css";
-
-import { NearProvider } from "near-connect-hooks";
 
 export default function App({ Component, pageProps }) {
   return (
-    <NearProvider config={{ network: NetworkId }}>
+    <NearProvider>
       <Navigation />
       <Component {...pageProps} />
     </NearProvider>

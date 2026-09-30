@@ -1,6 +1,6 @@
 import { parseNearAmount } from "near-api-js";
 import { useState } from "react";
-import { useNearWallet } from "near-connect-hooks";
+import { useNearWallet } from "@/components/near-provider";
 
 import { DonationNearContract } from "@/config";
 

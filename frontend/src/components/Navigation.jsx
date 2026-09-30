@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useNearWallet } from "near-connect-hooks";
+import { useNearWallet } from "@/components/near-provider";
 
 export const Navigation = () => {
   const { signedAccountId, signIn, signOut, loading } = useNearWallet();
